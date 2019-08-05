@@ -3,21 +3,18 @@ package com.peter.aneke.travelmantics
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
-import android.widget.Toast
+import android.view.MenuItem
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.android.material.snackbar.Snackbar
 import com.peter.aneke.travelmantics.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    val firebaseDb: FirebaseDatabase by lazy {FirebaseDatabase.getInstance()}
-    val databaseReference : DatabaseReference by lazy { firebaseDb.reference }
-    val viewModel : InputViewModel by lazy {ViewModelProviders.of(this).get(InputViewModel::class.java)}
-    private lateinit var binding : ActivityMainBinding
+
+    val viewModel: InputViewModel by lazy { ViewModelProviders.of(this).get(InputViewModel::class.java) }
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +25,10 @@ class MainActivity : AppCompatActivity() {
         binding.lifecycleOwner = this
         binding.viewmodel = viewModel
 
+        viewModel.errorMessage.observe(this, Observer {
+            Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show()
+        })
+
 
     }
 
@@ -35,5 +36,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.input_menu, menu)
         return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.save_btn -> viewModel.save()
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
